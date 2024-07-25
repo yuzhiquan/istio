@@ -102,6 +102,9 @@ func findServiceTargetPort(servicePort *model.Port, k8sService *v1.Service) serv
 	for _, p := range k8sService.Spec.Ports {
 		// TODO(@hzxuzhonghu): check protocol as well as port
 		if p.Name == servicePort.Name || p.Port == int32(servicePort.Port) {
+			if k8sService.Spec.ClusterIP == v1.ClusterIPNone {
+				return serviceTargetPort{num: int(p.Port), name: p.Name, explicitName: false}
+			}
 			if p.TargetPort.Type == intstr.Int && p.TargetPort.IntVal > 0 {
 				return serviceTargetPort{num: int(p.TargetPort.IntVal), name: p.Name, explicitName: false}
 			}
